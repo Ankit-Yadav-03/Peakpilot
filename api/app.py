@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def create_app(pipeline: Pipeline = None, system_config = None, db_path: str = "Peakpilot.db") -> FastAPI:
  
     app = FastAPI(
-        title="Peakpilot — Industrial Decision Engine",
+        title="Peakpilot - Industrial Decision Engine",
         description="DERC HT Industrial Real-Time MDI Optimization",
         version="1.0.0",
     )
@@ -64,7 +64,7 @@ def create_app(pipeline: Pipeline = None, system_config = None, db_path: str = "
     decision_engine = pipeline._decision_engine if pipeline else None
  
     # ------------------------------------------------------------------
-    # Result serialisation — field names must exactly match index.html
+    # Result serialisation - field names must exactly match index.html
     # ------------------------------------------------------------------
     def _result_to_dict(result) -> Dict[str, Any]:
         if result is None:
@@ -91,7 +91,7 @@ def create_app(pipeline: Pipeline = None, system_config = None, db_path: str = "
             "data_quality":    tick.data_quality,
         }
  
-        # risk — note model uses capital MDI / kVAh / MD attribute names
+        # risk - note model uses capital MDI / kVAh / MD attribute names
         risk_d: Dict[str, Any] = {}
         if risk:
             risk_d = {
@@ -216,7 +216,7 @@ def create_app(pipeline: Pipeline = None, system_config = None, db_path: str = "
         pipeline._on_result = _on_result_callback
  
     # ------------------------------------------------------------------
-    # DB helper — returns [] if DB file does not exist yet
+    # DB helper - returns [] if DB file does not exist yet
     # ------------------------------------------------------------------
     def _query_db(sql: str, params: tuple = ()) -> list:
         db_file = Path(db_path)

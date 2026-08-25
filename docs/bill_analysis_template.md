@@ -12,7 +12,7 @@ This process must be repeatable for every prospect.
 
 ---
 
-# Stage 1 — Bill Intake
+# Stage 1 - Bill Intake
 
 ## Required Documents
 
@@ -32,7 +32,7 @@ Do NOT block analysis if only one bill is available.
 
 ---
 
-# Stage 2 — Data Extraction
+# Stage 2 - Data Extraction
 
 Create a worksheet and extract:
 
@@ -90,7 +90,7 @@ Record:
 
 ---
 
-# Stage 3 — Demand Charge Analysis
+# Stage 3 - Demand Charge Analysis
 
 ## Calculate
 
@@ -124,7 +124,7 @@ If demand charges represent:
 
 ---
 
-# Stage 4 — Initial Opportunity Scoring
+# Stage 4 - Initial Opportunity Scoring
 
 ## Opportunity Score
 
@@ -150,7 +150,7 @@ All conditions:
 
 ---
 
-# Stage 5 — Savings Estimation
+# Stage 5 - Savings Estimation
 
 Since interval telemetry is unavailable at this stage:
 
@@ -214,7 +214,7 @@ Aggressive:
 
 ---
 
-# Stage 6 — Facility Fit Assessment
+# Stage 6 - Facility Fit Assessment
 
 ## Strong Candidate
 
@@ -242,7 +242,7 @@ Do Not Pursue
 
 ---
 
-# Stage 7 — Pilot Qualification Decision
+# Stage 7 - Pilot Qualification Decision
 
 Proceed only if:
 
@@ -260,7 +260,7 @@ Otherwise deprioritize.
 
 ---
 
-# Stage 8 — Customer Report
+# Stage 8 - Customer Report
 
 Create a 1–2 page report.
 
@@ -315,7 +315,7 @@ Validate savings opportunities using actual operational data and demand behavior
 
 ---
 
-# Stage 9 — CRM Tracking
+# Stage 9 - CRM Tracking
 
 Record:
 

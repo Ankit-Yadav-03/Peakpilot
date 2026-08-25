@@ -1,4 +1,4 @@
-# Architecture Report — Industrial Energy Optimization Platform (Validation-Ready)
+# Architecture Report - Industrial Energy Optimization Platform (Validation-Ready)
 
 > Generation rule: this document is derived strictly from runtime code evidence in the repository. Any statement not directly supported is omitted or marked **not proven from code**.
 
@@ -98,7 +98,7 @@ WebSocket payloads are produced by a pipeline callback wired in `api/app.py` (`p
 - `Pipeline.run()` handles cancellation: cancels equipment stream task, stops WAL flush worker.
 - `OutcomeWorker` is a daemon thread and runs infinite loop; explicit shutdown behavior is **not proven from code**.
 
-## Evidence map — Key artifacts
+## Evidence map - Key artifacts
 - Runtime orchestrator: `runtime/main.py`, `runtime/pipeline.py`
 - Telemetry: `ingestion/meter_stream.py`
 - State & risk: `state/state_detector.py`, `risk/anomaly_detector.py`, `risk/risk_estimator.py`

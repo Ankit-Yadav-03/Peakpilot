@@ -190,11 +190,11 @@ The objective is to identify peak-risk before it becomes a billed demand event."
 
 ## Subject Options
 
-Demand charge exposure — [Facility Name]
+Demand charge exposure - [Facility Name]
 
 OR
 
-[Facility Name] — observation regarding demand spikes
+[Facility Name] - observation regarding demand spikes
 
 OR
 

@@ -77,7 +77,7 @@ class ControlPolicy:
         now = time.time()
 
         # -------------------------
-        # STEP 0 — Input validation (CRITICAL FIX)
+        # STEP 0 - Input validation (CRITICAL FIX)
         # -------------------------
         current_mdi = getattr(risk_state, "projected_MDI_kva", None)
         contract = getattr(risk_state, "contract_demand_kva", None)
@@ -103,7 +103,7 @@ class ControlPolicy:
             return self._no_action("INVALID_RISK")
 
         # -------------------------
-        # STEP 1 — Safe target (FIXED hysteresis)
+        # STEP 1 - Safe target (FIXED hysteresis)
         # -------------------------
         base_target = max(0.0, contract - self._safety_margin_kva)
 
@@ -116,12 +116,12 @@ class ControlPolicy:
             safe_target = min(max(self._last_target_kva, lower), upper)
 
         # -------------------------
-        # STEP 2 — Required reduction
+        # STEP 2 - Required reduction
         # -------------------------
         required_reduction = max(0.0, current_mdi - safe_target)
 
         # -------------------------
-        # STEP 3 — Deadband (non-critical only)
+        # STEP 3 - Deadband (non-critical only)
         # -------------------------
         if (
             required_reduction < self._min_action_kva
@@ -130,7 +130,7 @@ class ControlPolicy:
             return self._no_action("DEADBAND")
 
         # -------------------------
-        # STEP 4 — Cooldown (critical bypass)
+        # STEP 4 - Cooldown (critical bypass)
         # -------------------------
         if (
             now - self._last_action_ts < self._cooldown_sec
@@ -139,7 +139,7 @@ class ControlPolicy:
             return self._no_action("COOLDOWN")
 
         # -------------------------
-        # STEP 5 — Feasibility (capacity only)
+        # STEP 5 - Feasibility (capacity only)
         # -------------------------
         loads = self._constraint_engine.get_available_loads()
 
@@ -151,7 +151,7 @@ class ControlPolicy:
         is_feasible = max_possible_reduction >= required_reduction
 
         # -------------------------
-        # STEP 6 — Decision logic (FIXED WARNING behavior)
+        # STEP 6 - Decision logic (FIXED WARNING behavior)
         # -------------------------
         should_act = False
         should_escalate = False
@@ -181,7 +181,7 @@ class ControlPolicy:
             return self._no_action("SAFE")
 
         # -------------------------
-        # STEP 7 — Control memory (FIXED stability)
+        # STEP 7 - Control memory (FIXED stability)
         # -------------------------
         if should_act:
             self._last_action_ts = now
@@ -192,7 +192,7 @@ class ControlPolicy:
             self._last_required_reduction *= 0.9
 
         # -------------------------
-        # STEP 8 — Logging (ENHANCED)
+        # STEP 8 - Logging (ENHANCED)
         # -------------------------
         logger.debug(
             "[CONTROL] mdi=%.1f target=%.1f required=%.1f max_cap=%.1f feasible=%s act=%s escalate=%s reason=%s",

@@ -2,7 +2,7 @@
 
 **Query**: Is `window_outcomes` important and uniquely necessary for future ML model training?
 
-**Answer**: ✓ **YES — CRITICAL for Stages 4-5 ML**, but currently unfilled due to missing `OutcomeEngine.compute()` pipeline.
+**Answer**: ✓ **YES - CRITICAL for Stages 4-5 ML**, but currently unfilled due to missing `OutcomeEngine.compute()` pipeline.
 
 ---
 
@@ -20,7 +20,7 @@ window_outcomes (
     actual_peak REAL,           ← Monthly cumulative peak (actual with interventions)
     baseline_peak REAL,         ← Monthly cumulative peak (counterfactual without interventions)
     
-    demand_saving REAL,         ← REALIZED SAVING (rupees) — actual economic outcome
+    demand_saving REAL,         ← REALIZED SAVING (rupees) - actual economic outcome
     energy_saving REAL,         ← NOT IMPLEMENTED (0.0)
     total_saving REAL,          ← Alias for demand_saving
     
@@ -35,9 +35,9 @@ window_outcomes (
 ```
 
 **Indexes**:
-- `(window_start)` — Time series queries
-- `(facility_id, window_start)` — **Unique grouping by facility + window** ✓
-- `(created_at)` — Insertion order tracking
+- `(window_start)` - Time series queries
+- `(facility_id, window_start)` - **Unique grouping by facility + window** ✓
+- `(created_at)` - Insertion order tracking
 
 ---
 
@@ -94,10 +94,10 @@ Aggregated (window level):
 ```
 
 **Why window-level aggregation is needed**:
-1. **MDI billing is per-window** — 30-min demand window is the cost unit
-2. **Causal inference** — need to isolate impact of interventions within each window
-3. **Feature stability** — window-level metrics are less noisy than per-tick
-4. **ML training** — 1 sample = 1 window outcome (X: conditions, y: realized_saving)
+1. **MDI billing is per-window** - 30-min demand window is the cost unit
+2. **Causal inference** - need to isolate impact of interventions within each window
+3. **Feature stability** - window-level metrics are less noisy than per-tick
+4. **ML training** - 1 sample = 1 window outcome (X: conditions, y: realized_saving)
 
 ---
 
@@ -194,10 +194,10 @@ rl_dataset = [
 4. **Optuna objective**: Maximize (realized_saving - constraints_violated)
 
 **Data required from window_outcomes**:
-- ✓ `actual_mdi`, `baseline_mdi` — ground truth outcomes
-- ✓ `demand_saving` — reward signal
-- ✓ `facility_id`, `window_start` — grouping for multi-facility learning
-- ✗ `energy_saving`, `actual_bill` — currently not implemented (would improve signals)
+- ✓ `actual_mdi`, `baseline_mdi` - ground truth outcomes
+- ✓ `demand_saving` - reward signal
+- ✓ `facility_id`, `window_start` - grouping for multi-facility learning
+- ✗ `energy_saving`, `actual_bill` - currently not implemented (would improve signals)
 
 ---
 
@@ -205,18 +205,18 @@ rl_dataset = [
 
 | Field | Current Status | Used By | Future Stage | ML Value |
 |-------|--------|---------|----------------|----------|
-| **facility_id** | ✓ Defined | Grouping | All | HIGH — Multi-facility aggregation |
-| **window_start** | ✓ Defined | Time series key | All | HIGH — Time series ordering, billing cycle tracking |
-| **actual_mdi** | ✓ In schema | Ground truth | 4, 5 | **CRITICAL** — Target variable for forecasting |
-| **baseline_mdi** | ✓ In schema | Ground truth | 4, 5 | **CRITICAL** — Current model performance baseline |
-| **actual_peak** | ✓ Defined | Monthly peak tracking | 4, 5 | MEDIUM — Cumulative risk tracking |
-| **baseline_peak** | ✓ Defined | Counterfactual tracking | 4, 5 | MEDIUM — What-if analysis |
-| **demand_saving** | ✓ In schema | Reward signal | 5 (RL) | **CRITICAL** — RL reward; economic outcome |
+| **facility_id** | ✓ Defined | Grouping | All | HIGH - Multi-facility aggregation |
+| **window_start** | ✓ Defined | Time series key | All | HIGH - Time series ordering, billing cycle tracking |
+| **actual_mdi** | ✓ In schema | Ground truth | 4, 5 | **CRITICAL** - Target variable for forecasting |
+| **baseline_mdi** | ✓ In schema | Ground truth | 4, 5 | **CRITICAL** - Current model performance baseline |
+| **actual_peak** | ✓ Defined | Monthly peak tracking | 4, 5 | MEDIUM - Cumulative risk tracking |
+| **baseline_peak** | ✓ Defined | Counterfactual tracking | 4, 5 | MEDIUM - What-if analysis |
+| **demand_saving** | ✓ In schema | Reward signal | 5 (RL) | **CRITICAL** - RL reward; economic outcome |
 | **energy_saving** | ✗ NOT IMPLEMENTED | Future energy tariffs | Future | LOW (for now) |
-| **total_saving** | ✓ Defined | Economic outcome | 4, 5 | HIGH — Primary objective function |
-| **actual_bill** | ✗ NOT IMPLEMENTED | Cost tracking | 5+ | MEDIUM — Could improve financial signals |
-| **baseline_bill** | ✗ NOT IMPLEMENTED | Counterfactual costs | 5+ | MEDIUM — Impact analysis |
-| **window_kvah** | ✓ Defined | Energy context | 4, 5 | MEDIUM — Feature for load projection |
+| **total_saving** | ✓ Defined | Economic outcome | 4, 5 | HIGH - Primary objective function |
+| **actual_bill** | ✗ NOT IMPLEMENTED | Cost tracking | 5+ | MEDIUM - Could improve financial signals |
+| **baseline_bill** | ✗ NOT IMPLEMENTED | Counterfactual costs | 5+ | MEDIUM - Impact analysis |
+| **window_kvah** | ✓ Defined | Energy context | 4, 5 | MEDIUM - Feature for load projection |
 | **window_kwh** | ✗ NOT IMPLEMENTED | TOD tariff impact | 5+ | LOW (currently zero) |
 
 ---
@@ -227,7 +227,7 @@ rl_dataset = [
 
 **Hypothesis**: Could we rebuild window_outcomes from decision_events + execution_events?
 
-**Answer**: ❌ **NO — That would lose causal information**
+**Answer**: ❌ **NO - That would lose causal information**
 
 ```python
 # WRONG APPROACH:
@@ -255,10 +255,10 @@ outcome = {
 ```
 
 **Why window_outcomes is unique**:
-1. **Pairs actual vs counterfactual** — can't derive from single tables
-2. **Window-aggregated context** — billing and cost calculations require window boundaries
-3. **Facility + time grouping** — enables multi-facility time series learning
-4. **Links to monthly_state** — enables cumulative peak tracking (needed for bill calculation)
+1. **Pairs actual vs counterfactual** - can't derive from single tables
+2. **Window-aggregated context** - billing and cost calculations require window boundaries
+3. **Facility + time grouping** - enables multi-facility time series learning
+4. **Links to monthly_state** - enables cumulative peak tracking (needed for bill calculation)
 
 ---
 
@@ -343,15 +343,15 @@ class WindowOutcomeProcessor:
 
 ## Part 8: Verdict for Future Model Training
 
-### Is window_outcomes Important? ✓ **YES — ESSENTIAL**
+### Is window_outcomes Important? ✓ **YES - ESSENTIAL**
 
 | Aspect | Assessment |
 |--------|-----------|
-| **Unique data?** | ✓ YES — Only source of (actual_mdi, baseline_mdi) pairs |
-| **ML training?** | ✓ YES — Both Stage 4 (supervised) and Stage 5 (RL) depend on it |
-| **Grouping necessary?** | ✓ YES — Window + facility grouping enables time series learning |
-| **Future scalability?** | ✓ YES — Indexes on (facility_id, window_start) enable multi-facility studies |
-| **Implemented today?** | ✗ NO — OutcomeEngine not invoked, tables empty |
+| **Unique data?** | ✓ YES - Only source of (actual_mdi, baseline_mdi) pairs |
+| **ML training?** | ✓ YES - Both Stage 4 (supervised) and Stage 5 (RL) depend on it |
+| **Grouping necessary?** | ✓ YES - Window + facility grouping enables time series learning |
+| **Future scalability?** | ✓ YES - Indexes on (facility_id, window_start) enable multi-facility studies |
+| **Implemented today?** | ✗ NO - OutcomeEngine not invoked, tables empty |
 
 ### What to Do Now (for future ML):
 
@@ -376,12 +376,12 @@ class WindowOutcomeProcessor:
 
 ## Summary
 
-**window_outcomes is not just important — it's the foundation of future ML:**
+**window_outcomes is not just important - it's the foundation of future ML:**
 
-1. **Causal ground truth** — Unique pairing of actual vs counterfactual outcomes
-2. **Aggregation level** — Window-level granularity matches billing and forecasting needs
-3. **Multi-facility learning** — Indexes enable cross-facility pattern discovery
-4. **Training signals** — demand_saving provides RL rewards; projection errors enable supervised learning
+1. **Causal ground truth** - Unique pairing of actual vs counterfactual outcomes
+2. **Aggregation level** - Window-level granularity matches billing and forecasting needs
+3. **Multi-facility learning** - Indexes enable cross-facility pattern discovery
+4. **Training signals** - demand_saving provides RL rewards; projection errors enable supervised learning
 
 **Current status**: ❌ Schema designed but **completely unused** due to missing processor pipeline.
 

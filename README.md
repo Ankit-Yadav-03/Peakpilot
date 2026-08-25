@@ -1,4 +1,4 @@
-# Peakpilot — Industrial Decision Engine
+# Peakpilot - Industrial Decision Engine
 
 **DERC HT Industrial Real-Time MDI Optimization**  
 Delhi NCR manufacturing facilities | HT 11kV grid connections | BRPL / BYPL / TPDDL
@@ -54,7 +54,7 @@ Peakpilot/
 │   ├── __init__.py
 │   ├── meter_stream.py    # SimulatedMeterReader, ModbusMeterReader, MQTTMeterReader
 │   ├── payload_validator.py # 7 error + 4 warning physical constraint checks
-│   └── register_parser.py # Modbus INT16/INT32 BE/LE, FLOAT32 — Secure Elite 440 map
+│   └── register_parser.py # Modbus INT16/INT32 BE/LE, FLOAT32 - Secure Elite 440 map
 ├── state/
 │   ├── __init__.py
 │   └── state_detector.py  # 30-min MDI window, trapezoidal kVAh accumulation
@@ -123,23 +123,23 @@ Peakpilot/
 
 ---
 
-## Pipeline (per tick — 14 steps)
+## Pipeline (per tick - 14 steps)
 
 ```
 MeterTick (Modbus/MQTT/Simulation)
-  ↓ 1.  PayloadValidator          — reject errors, flag warnings
-  ↓ 2.  StateDetector             — 30-min window, trapezoidal kVAh, projected MDI
-  ↓ 3.  AnomalyDetector           — inrush, load creep, stale data
-  ↓ 4.  TariffEngine              — TOD window, effective energy rate
-  ↓ 5.  RiskEstimator             — SAFE/WATCH/WARNING/CRITICAL + escalations
-  ↓ 6.  ConstraintEngine          — required reduction, load selection, dep validation
-  ↓ 7.  TODOptimizer              — shift/pre-cooling opportunities
-  ↓ 8.  ConflictResolver          — adaptive multiplier by billing cycle day
-  ↓ 9.  ConfidenceScorer          — 6-signal weighted score, familiarity stratification
-  ↓ 10. Confidence floor check    — suppress if < 0.45 (non-CRITICAL)
-  ↓ 11. DecisionCooldown          — suppress same load within 10 min
-  ↓ 12. RecommendationEngine      — format operator message with cost breakdown
-  ↓ 13. EventLogger (WAL sync)    — write to event_wal, async flush to destination
+  ↓ 1.  PayloadValidator          - reject errors, flag warnings
+  ↓ 2.  StateDetector             - 30-min window, trapezoidal kVAh, projected MDI
+  ↓ 3.  AnomalyDetector           - inrush, load creep, stale data
+  ↓ 4.  TariffEngine              - TOD window, effective energy rate
+  ↓ 5.  RiskEstimator             - SAFE/WATCH/WARNING/CRITICAL + escalations
+  ↓ 6.  ConstraintEngine          - required reduction, load selection, dep validation
+  ↓ 7.  TODOptimizer              - shift/pre-cooling opportunities
+  ↓ 8.  ConflictResolver          - adaptive multiplier by billing cycle day
+  ↓ 9.  ConfidenceScorer          - 6-signal weighted score, familiarity stratification
+  ↓ 10. Confidence floor check    - suppress if < 0.45 (non-CRITICAL)
+  ↓ 11. DecisionCooldown          - suppress same load within 10 min
+  ↓ 12. RecommendationEngine      - format operator message with cost breakdown
+  ↓ 13. EventLogger (WAL sync)    - write to event_wal, async flush to destination
   ↓ 14. Dashboard / API output
 ```
 
@@ -154,7 +154,7 @@ MeterTick (Modbus/MQTT/Simulation)
 | 3/4 | Energy Charge (with TOD) | `kVAh × 7.75 × 0.97 × TOD_multiplier` |
 | 5 | Subtotal Base | Steps 1 + 2 + 3/4 |
 | 6 | DRRS + Pension Trust | `Subtotal × 0.08 + Subtotal × 0.05` |
-| 7 | PPAC | `Subtotal × 0.0725` (BRPL) — on Step 5 only, not nested |
+| 7 | PPAC | `Subtotal × 0.0725` (BRPL) - on Step 5 only, not nested |
 | 8 | Electricity Duty | `kWh × ₹0.72` |
 | 9 | Total | Steps 5+6+7+8 + Meter Rent |
 
@@ -162,7 +162,7 @@ MeterTick (Modbus/MQTT/Simulation)
 - TOD applies May–September only
 - PPAC on Step 5 subtotal, NOT on Step 6 surcharges
 - Voltage rebate on energy charges only (not demand/fixed)
-- `counterfactual_mdi_kva` locked at decision time — never recomputed
+- `counterfactual_mdi_kva` locked at decision time - never recomputed
 
 ---
 
@@ -194,7 +194,7 @@ MeterTick (Modbus/MQTT/Simulation)
 | Data quality | 0.05 | 1.0 / 0.3 |
 | Billing cycle position | 0.05 | 0.60 |
 
-**Operator compliance is stratified by familiarity bucket** (LOW/MEDIUM/HIGH) to break correlation — both signals draw from the same history pool and unusual conditions produce low compliance. Stratification breaks this.
+**Operator compliance is stratified by familiarity bucket** (LOW/MEDIUM/HIGH) to break correlation - both signals draw from the same history pool and unusual conditions produce low compliance. Stratification breaks this.
 
 **Urgency thresholds:**
 - ≥ 0.75 → SHOW_HIGH
@@ -249,11 +249,11 @@ system:
 
 ## Database Schema (SQLite, WAL-backed)
 
-- **event_wal** — two-phase write buffer, crash-safe
-- **telemetry_events** — per-tick meter data
-- **decision_events** — recommendations with confidence, loads, savings
-- **action_events** — operator responses (FOLLOWED/IGNORED/PARTIAL/MODIFIED)
-- **outcome_events** — actual MDI vs projected, load_performance_ratio
+- **event_wal** - two-phase write buffer, crash-safe
+- **telemetry_events** - per-tick meter data
+- **decision_events** - recommendations with confidence, loads, savings
+- **action_events** - operator responses (FOLLOWED/IGNORED/PARTIAL/MODIFIED)
+- **outcome_events** - actual MDI vs projected, load_performance_ratio
 
 ---
 
@@ -261,22 +261,22 @@ system:
 
 | Stage | What | Entry Requirement |
 |-------|------|-------------------|
-| 0 — MVP (this) | Simulation pipeline, SQLite | — |
-| 1 — Real meter | Modbus/MQTT, edge deployment | Pilot facility identified |
-| 2 — Infrastructure | Multi-facility, PostgreSQL, web dashboard | 3+ pilots |
-| 3 — NILM | Infer loads from aggregate waveform | 6+ months submeter data |
-| 4 — ML models | XGBoost forecaster, Isolation Forest | 90 days logged pairs |
-| 5 — Policy learning | Optuna tuning, LightGBM, RL | 6 months, 5+ facilities |
-| 6 — Autonomous control | PLC/SCADA integration | 12+ months, legal clearance |
-| 7 — Platform | Cross-facility, white-label API | 20+ facilities |
+| 0 - MVP (this) | Simulation pipeline, SQLite | - |
+| 1 - Real meter | Modbus/MQTT, edge deployment | Pilot facility identified |
+| 2 - Infrastructure | Multi-facility, PostgreSQL, web dashboard | 3+ pilots |
+| 3 - NILM | Infer loads from aggregate waveform | 6+ months submeter data |
+| 4 - ML models | XGBoost forecaster, Isolation Forest | 90 days logged pairs |
+| 5 - Policy learning | Optuna tuning, LightGBM, RL | 6 months, 5+ facilities |
+| 6 - Autonomous control | PLC/SCADA integration | 12+ months, legal clearance |
+| 7 - Platform | Cross-facility, white-label API | 20+ facilities |
 
 ---
 
 ## Known Limitations (Stage 0)
 
 - Static load model (nameplate kW) → MDI reduction estimates ±20% initially. Converges over 30 days via `load_performance_ratio` calibration.
-- Greedy load selection — not optimal for N > 8 loads. Accurate for typical factory (3–8 shiftable loads). LP solver at Stage 5.
-- Linear MDI projection — over-estimates on inrush, under-estimates on gradual creep. XGBoost forecaster at Stage 4.
+- Greedy load selection - not optimal for N > 8 loads. Accurate for typical factory (3–8 shiftable loads). LP solver at Stage 5.
+- Linear MDI projection - over-estimates on inrush, under-estimates on gradual creep. XGBoost forecaster at Stage 4.
 - Pension Trust Surcharge: 5% configured, may be 7% per stakeholder testimony. **Verify against live industrial bill before invoicing.**
 - Single facility per pipeline instance. PostgreSQL + refactor at Stage 2.
 
@@ -287,6 +287,6 @@ system:
 - Priority 1 loads: **NEVER** shed under any circumstances
 - Dependency violations: **NEVER** shed a load while a dependent load runs
 - CRITICAL risk: **NEVER** suppress recommendation regardless of confidence
-- Negative savings: raises `ValueError` — indicates counterfactual reconstruction error
+- Negative savings: raises `ValueError` - indicates counterfactual reconstruction error
 - `counterfactual_mdi_kva`: locked at decision time, **never** recomputed retroactively
 

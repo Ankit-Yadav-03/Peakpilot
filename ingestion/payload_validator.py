@@ -41,7 +41,7 @@ class PayloadValidator:
 
         # --- Error checks (reject tick on any error) ---
 
-        # Negative power — no generation in MVP
+        # Negative power - no generation in MVP
         if tick.kw < 0:
             errors.append(f"Negative kW: {tick.kw:.3f}. No generation supported in MVP.")
         if tick.kva < 0:
@@ -77,7 +77,7 @@ class PayloadValidator:
                 )
 
         # Staleness check: reject tick older than 300 seconds from now
-        # SIMULATION source is exempt — this check guards against stale MQTT retained messages
+        # SIMULATION source is exempt - this check guards against stale MQTT retained messages
         if tick.source != "SIMULATION":
             now_utc = datetime.now(IST)
             tick_ts = tick.timestamp
@@ -114,7 +114,7 @@ class PayloadValidator:
                 deviation = abs(v - NOMINAL_VOLTAGE) / NOMINAL_VOLTAGE
                 if VOLTAGE_WARN_THRESHOLD <= deviation <= VOLTAGE_ERROR_THRESHOLD:
                     warnings.append(
-                        f"Voltage {phase} {v:.1f}V deviation {deviation*100:.1f}% — marginal but accepted."
+                        f"Voltage {phase} {v:.1f}V deviation {deviation*100:.1f}% - marginal but accepted."
                     )
 
             # Load approaching contract limit

@@ -3,7 +3,7 @@
 > Scope: Industrial Energy Optimization Platform (“Peakpilot”)
 > Evidence policy: Only components and flows proven from code paths are included. Anything not provable is marked **not proven from code**.
 
-## 1) System Inventory — Major Runtime Subsystems
+## 1) System Inventory - Major Runtime Subsystems
 
 ### A. Runtime Entrypoint / Orchestration
 - **Name**: CLI + Async Pipeline Orchestrator

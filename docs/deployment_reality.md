@@ -363,7 +363,7 @@ Multi-site validation remains pending.
 
 # Deployment Scenarios
 
-## Scenario A — Meter Only Facility
+## Scenario A - Meter Only Facility
 
 Available:
 
@@ -387,7 +387,7 @@ Medium
 
 ---
 
-## Scenario B — Meter + Equipment Telemetry
+## Scenario B - Meter + Equipment Telemetry
 
 Available:
 
@@ -408,7 +408,7 @@ High
 
 ---
 
-## Scenario C — Meter + BMS Integration
+## Scenario C - Meter + BMS Integration
 
 Available:
 
@@ -438,7 +438,7 @@ Integration effort required.
 
 ---
 
-## Scenario D — Multi-Facility Deployment
+## Scenario D - Multi-Facility Deployment
 
 Available:
 

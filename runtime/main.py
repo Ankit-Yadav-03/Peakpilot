@@ -34,7 +34,7 @@ logger = logging.getLogger("main")
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Peakpilot — Industrial Decision Engine")
+    parser = argparse.ArgumentParser(description="Peakpilot - Industrial Decision Engine")
     parser.add_argument(
         "--mode",
         choices=["simulation", "modbus", "mqtt"],

@@ -86,7 +86,7 @@ def _format_demand_message(
     ]
 
     lines = [
-        f"⚡ DEMAND ALERT — {risk_state.risk_level}",
+        f"⚡ DEMAND ALERT - {risk_state.risk_level}",
         f"",
         f"Projected MDI: {risk_state.projected_MDI_kva:.1f} kVA "
         f"(Contract: {risk_state.contract_demand_kva:.1f} kVA, "
@@ -96,7 +96,7 @@ def _format_demand_message(
         f"{risk_state.remaining_minutes:.0f} min remaining",
 
         f"",
-        f"ACTION REQUIRED — Shed these loads NOW:",
+        f"ACTION REQUIRED - Shed these loads NOW:",
     ]
 
     for i, (lid, name) in enumerate(
@@ -133,7 +133,7 @@ def _format_demand_message(
         "SHOW_HIGH_WITH_STRONG_FLAGS",
     ):
         lines.append(
-            "⚠ Low confidence — verify conditions before acting."
+            "⚠ Low confidence - verify conditions before acting."
         )
 
     return "\n".join(lines)
@@ -160,7 +160,7 @@ def _format_tod_message(
     }.get(tod_rec.action, tod_rec.action)
 
     lines = [
-        f"🕐 TOD OPTIMIZATION — {action_label}",
+        f"🕐 TOD OPTIMIZATION - {action_label}",
 
         f"Current window: {tariff_state.tod_window}",
 
@@ -194,7 +194,7 @@ def _format_no_action_message(
     cost_state: CostState,
 ) -> str:
     return (
-        f"✅ SAFE — No action required\n"
+        f"✅ SAFE - No action required\n"
         f"Projected MDI: {risk_state.projected_MDI_kva:.1f} kVA "
         f"(Contract: {risk_state.contract_demand_kva:.1f} kVA)\n"
         f"TOD: {tariff_state.tod_window} | "

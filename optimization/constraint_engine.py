@@ -66,7 +66,7 @@ def validate_shed_plan(
             if load_id in other_load.get("process_dependency", []):
                 if other_id not in shed_set:
                     violations.append(
-                        f"Cannot shed {load_id} ({loads_dict.get(load_id, {}).get('name', '')}) — "
+                        f"Cannot shed {load_id} ({loads_dict.get(load_id, {}).get('name', '')}) - "
                         f"required by {other_id} ({other_load.get('name', '')}) which remains running."
                     )
     return (len(violations) == 0, violations)

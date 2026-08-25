@@ -1,4 +1,4 @@
-# Ideal Customer Profile (ICP) — Phase 1 Market Entry
+# Ideal Customer Profile (ICP) - Phase 1 Market Entry
 
 ## Core Positioning
 

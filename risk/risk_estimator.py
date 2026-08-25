@@ -121,7 +121,7 @@ class RiskEstimator:
                 will_set_new_monthly_MD=False,
                 billing_cycle_day=billing_cycle_day,
                 escalation_reasons=[
-                    "Inrush detected — transient spike suppression applied"
+                    "Inrush detected - transient spike suppression applied"
                 ],
             )
 
@@ -141,7 +141,7 @@ class RiskEstimator:
                 will_set_new_monthly_MD=False,
                 billing_cycle_day=billing_cycle_day,
                 escalation_reasons=[
-                    "Meter data stale — reliability degraded",
+                    "Meter data stale - reliability degraded",
                     "System cannot guarantee optimization safety"
                 ],
             )

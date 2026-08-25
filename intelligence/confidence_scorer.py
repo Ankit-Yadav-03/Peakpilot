@@ -260,7 +260,7 @@ class ConfidenceScorer:
         <0.35 non-CRITICAL  → SUPPRESS_LOG_ONLY
         <0.45 non-CRITICAL  → suppress (confidence floor)
         ≥0.50 CRITICAL      → SHOW_HIGH (override)
-        <0.50 CRITICAL      → SHOW_HIGH_WITH_STRONG_FLAGS — never suppress CRITICAL
+        <0.50 CRITICAL      → SHOW_HIGH_WITH_STRONG_FLAGS - never suppress CRITICAL
         """
         is_critical = risk_level == "CRITICAL"
 
