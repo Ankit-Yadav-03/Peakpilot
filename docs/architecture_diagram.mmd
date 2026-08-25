@@ -1,0 +1,99 @@
+flowchart LR
+
+  %% =====================
+  %% Telemetry sources
+  %% =====================
+  subgraph T[Telemetry Sources]
+    direction LR
+    SIM[SimulatedMeterReader.stream() -> MeterTick (source=SIMULATION)]
+    MOD[ModbusMeterReader.stream() -> MeterTick (source=MODBUS)]
+    MQTT[MQTTMeterReader.stream() -> MeterTick (source=MQTT)]
+  end
+
+  %% =====================
+  %% Core per-tick decisioning
+  %% =====================
+  V[DecisionEngine.process_tick(tick)]
+  VAL[PayloadValidator.validate(tick)]
+  SD[StateDetector.process_tick(tick)]
+  AN[AnomalyDetector.detect(tick, window_start)]
+  WINQ[StateDetector window-close callback -> DecisionEngine._window_events queue]
+
+  RK[RiskEstimator.compute(...)]
+  TX[TariffEngine.compute(tick)]
+  CS[CostSimulator.compute(...)]
+
+  PL[ControlPolicy.evaluate(risk_state)]
+  CE[ConstraintEngine.get_available_loads/select/evaluate combinations]
+  IP[IntelligentPlanner.generate_plan(...)]
+  TOD[TODOptimizer.compute(tick, tariff_state, risk_state)]
+  CR[ConflictResolver.resolve(demand_rec, tod_rec, risk_state)]
+  REC[RecommendationEngine.build(...)]
+
+  %% =====================
+  %% Execution tracking
+  %% =====================
+  AE[ActionStateManager (cooldown/restore pending)]
+  EXM[ExecutionStateManager.create_pending_for_recommendation + reconcile(tick)]
+
+  %% =====================
+  %% Persistence layer (SQLite)
+  %% =====================
+  WAL[DurableEventLogger (event_wal + async flush worker)]
+  DB[(SQLite: Peakpilot.db)]
+
+  %% =====================
+  %% Outcome feedback loop
+  %% =====================
+  OW[OutcomeWorker thread (polls DB)]
+  OE[OutcomeEngine.compute(conn, window_event)]
+  
+  %% =====================
+  %% API exposure
+  %% =====================
+  API[FastAPI REST + WebSocket /ws/live]
+
+  %% Main runtime path (per tick)
+  SIM --> V
+  MOD --> V
+  MQTT --> V
+
+  V --> VAL
+  V --> SD
+  SD --> WINQ
+  V --> AN
+  SD --> RK
+  AN --> RK
+
+  V --> TX
+  TX --> CS
+  SD --> CS
+  RK --> CS
+
+  V --> PL
+  PL --> CE
+  CE --> IP
+  V --> TOD
+  IP --> CR
+  TOD --> CR
+  RK --> CR
+
+  CR --> REC
+  REC --> AE
+  REC --> EXM
+
+  %% Persist writes during tick
+  SD --> WAL
+  EXM --> WAL
+  REC --> WAL
+
+  %% Persisted data read by background worker (feedback loop)
+  WAL --> DB
+  DB --> OW
+  OW --> OE
+  OE --> WAL
+
+  %% API reads live in-memory result and DB history
+  REC --> API
+  DB --> API
+

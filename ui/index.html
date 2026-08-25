@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Peakpilot ─ Industrial Decision Engine</title>
+	<style>
+		:root {
+			--bg: #0d0f14;
+			--card: #151921;
+			--border: #1e2530;
+			--accent: #00d4ff;
+			--warn: #f59e0b;
+			--danger: #ef4444;
+			--safe: #10b981;
+			--text: #e2e8f0;
+			--muted: #64748b;
+			--watch: #3b82f6;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			background: var(--bg);
+			color: var(--text);
+			font-family: 'JetBrains Mono', 'Fira Code', monospace;
+			font-size: 13px;
+		}
+
+		header {
+			background: var(--card);
+			border-bottom: 1px solid var(--border);
+			padding: 12px 24px;
+			display: flex;
+			align-items: center;
+			gap: 16px;
+		}
+
+		header h1 {
+			font-size: 15px;
+			font-weight: 700;
+			color: var(--accent);
+			letter-spacing: 0.05em;
+		}
+
+		#conn-status {
+			font-size: 11px;
+			padding: 2px 8px;
+			border-radius: 12px;
+			font-weight: 600;
+		}
+
+		.connected {
+			background: #064e3b;
+			color: var(--safe);
+		}
+
+		.disconnected {
+			background: #450a0a;
+			color: var(--danger);
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			gap: 12px;
+			padding: 16px;
+		}
+
+		.grid-wide {
+			display: grid;
+			grid-template-columns: 2fr 1fr;
+			gap: 12px;
+			padding: 0 16px 16px;
+		}
+
+		.card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			padding: 16px;
+		}
+
+		.card-title {
+			font-size: 10px;
+			font-weight: 700;
+			letter-spacing: 0.1em;
+			color: var(--muted);
+			text-transform: uppercase;
+			margin-bottom: 12px;
+		}
+
+		.metric {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			margin-bottom: 8px;
+		}
+
+		.metric-label {
+			color: var(--muted);
+			font-size: 11px;
+		}
+
+		.metric-value {
+			font-size: 18px;
+			font-weight: 700;
+			color: var(--accent);
+		}
+
+		.metric-unit {
+			font-size: 10px;
+			color: var(--muted);
+			margin-left: 4px;
+		}
+
+		.risk-badge {
+			display: inline-block;
+			padding: 4px 12px;
+			border-radius: 4px;
+			font-weight: 700;
+			font-size: 14px;
+			letter-spacing: 0.05em;
+		}
+
+		.risk-SAFE {
+			background: #064e3b;
+			color: var(--safe);
+		}
+
+		.risk-WATCH {
+			background: #1e3a5f;
+			color: var(--watch);
+		}
+
+		.risk-WARNING {
+			background: #451a03;
+			color: var(--warn);
+		}
+
+		.risk-CRITICAL {
+			background: #450a0a;
+			color: var(--danger);
+			animation: pulse 1s ease-in-out infinite;
+		}
+
+		@keyframes pulse {
+
+			0%,
+			100% {
+				opacity: 1
+			}
+
+			50% {
+				opacity: 0.6
+			}
+		}
+
+		.progress-bar {
+			width: 100%;
+			background: var(--border);
+			border-radius: 4px;
+			height: 8px;
+			margin-top: 4px;
+			overflow: hidden;
+		}
+
+		.progress-fill {
+			height: 100%;
+			border-radius: 4px;
+			transition: width 0.5s, background 0.3s;
+		}
+
+		.rec-box {
+			background: #0a0d12;
+			border-radius: 6px;
+			padding: 14px;
+			font-size: 12px;
+			line-height: 1.7;
+			white-space: pre-wrap;
+			font-family: inherit;
+			min-height: 120px;
+			border: 1px solid var(--border);
+		}
+
+		.rec-SHED {
+			border-left: 3px solid var(--danger);
+		}
+
+		.rec-DELAY {
+			border-left: 3px solid var(--warn);
+		}
+
+		.rec-PRE_RUN {
+			border-left: 3px solid var(--accent);
+		}
+
+		.rec-NO_ACTION {
+			border-left: 3px solid var(--safe);
+		}
+
+		.flag-row {
+			display: flex;
+			gap: 8px;
+			flex-wrap: wrap;
+			margin-top: 8px;
+		}
+
+		.flag {
+			font-size: 10px;
+			padding: 2px 6px;
+			border-radius: 3px;
+			background: #1e2530;
+			color: var(--muted);
+			font-weight: 600;
+		}
+
+		.flag.active {
+			background: #451a03;
+			color: var(--warn);
+		}
+
+		.flag.ok {
+			background: #0a1f18;
+			color: var(--safe);
+		}
+
+		.tod-badge {
+			font-size: 11px;
+			padding: 2px 8px;
+			border-radius: 3px;
+			font-weight: 700;
+		}
+
+		.tod-PEAK {
+			background: #450a0a;
+			color: var(--danger);
+		}
+
+		.tod-OFF_PEAK {
+			background: #064e3b;
+			color: var(--safe);
+		}
+
+		.tod-NORMAL {
+			background: #1e2530;
+			color: var(--text);
+		}
+
+		.tod-NO_TOD {
+			background: #1e2530;
+			color: var(--muted);
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 11px;
+		}
+
+		th {
+			color: var(--muted);
+			text-align: left;
+			padding: 6px 8px;
+			border-bottom: 1px solid var(--border);
+			font-weight: 600;
+			font-size: 10px;
+			letter-spacing: 0.05em;
+		}
+
+		td {
+			padding: 6px 8px;
+			border-bottom: 1px solid #1a1f28;
+		}
+
+		tr:hover td {
+			background: #1a1f28;
+		}
+
+		.scroll-table {
+			max-height: 280px;
+			overflow-y: auto;
+		}
+
+		footer {
+			text-align: center;
+			color: var(--muted);
+			font-size: 10px;
+			padding: 12px;
+			border-top: 1px solid var(--border);
+		}
+
+		.conf-bar {
+			width: 100%;
+			background: var(--border);
+			border-radius: 2px;
+			height: 4px;
+			margin-top: 4px;
+		}
+
+		.conf-fill {
+			height: 100%;
+			border-radius: 2px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<header>
+		<h1>⚡Peakpilot ─ Industrial Decision Engine</h1>
+		<span id="conn-status" class="disconnected">● DISCONNECTED</span>
+		<span id="tick-counter" style="margin-left:auto;color:var(--muted);font-size:11px;">Ticks: 0</span>
+		<span id="last-update" style="margin-left:16px;color:var(--muted);font-size:11px;"></span>
+	</header>
+
+	<div class="grid">
+
+		<!-- Risk Status -->
+		<div class="card">
+			<div class="card-title">Risk Status</div>
+			<div style="margin-bottom:12px;">
+				<span class="risk-badge risk-SAFE" id="risk-badge">SAFE</span>
+				<span class="tod-badge tod-NO_TOD" id="tod-badge" style="margin-left:8px;">NO_TOD</span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Projected MDI</span>
+				<span><span class="metric-value" id="proj-mdi">─</span><span class="metric-unit">kVA</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Contract Demand</span>
+				<span><span class="metric-value" id="contract-kva" style="font-size:14px;">─</span><span
+						class="metric-unit">kVA</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Headroom</span>
+				<span><span class="metric-value" id="headroom" style="font-size:14px;">─</span><span
+						class="metric-unit">kVA</span></span>
+			</div>
+			<div style="margin-top:8px;">
+				<div
+					style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:3px;">
+					<span>MDI / Contract</span><span id="ratio-pct">─%</span>
+				</div>
+				<div class="progress-bar">
+					<div class="progress-fill" id="mdi-bar" style="width:0%;background:var(--safe)"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 30-Min Window -->
+		<div class="card">
+			<div class="card-title">30-Min MDI Window</div>
+			<div class="metric">
+				<span class="metric-label">Elapsed</span>
+				<span><span class="metric-value" id="elapsed-min">─</span><span class="metric-unit">min</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Remaining</span>
+				<span><span class="metric-value" id="remaining-min">─</span><span class="metric-unit">min</span></span>
+			</div>
+			<div style="margin-top:4px;margin-bottom:12px;">
+				<div class="progress-bar" style="height:6px;">
+					<div class="progress-fill" id="window-bar" style="width:0%;background:var(--accent)"></div>
+				</div>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Accumulated kVAh</span>
+				<span><span class="metric-value" id="acc-kvah" style="font-size:13px;">─</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Billing Cycle Day</span>
+				<span><span class="metric-value" id="billing-day" style="font-size:13px;">─</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Monthly MD Record</span>
+				<span><span id="monthly-md" style="font-size:11px;color:var(--warn);">─</span></span>
+			</div>
+		</div>
+
+		<!-- Live Meter -->
+		<div class="card">
+			<div class="card-title">Live Meter</div>
+			<div class="metric">
+				<span class="metric-label">kVA</span>
+				<span><span class="metric-value" id="live-kva">─</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">kW</span>
+				<span><span class="metric-value" id="live-kw" style="font-size:14px;">─</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Power Factor</span>
+				<span><span class="metric-value" id="live-pf" style="font-size:14px;">─</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Frequency</span>
+				<span><span class="metric-value" id="live-freq" style="font-size:14px;">─</span><span
+						class="metric-unit">Hz</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Voltages L1/L2/L3</span>
+			</div>
+			<div style="font-size:12px;color:var(--accent);" id="voltages">─</div>
+			<div style="margin-top:8px;font-size:10px;" id="data-quality">Quality: ─</div>
+		</div>
+
+	</div><!-- /grid -->
+
+	<div class="grid-wide">
+
+		<!-- Recommendation -->
+		<div class="card">
+			<div class="card-title">Recommendation</div>
+			<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
+				<span id="rec-type-badge"
+					style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;background:#1e2530;color:var(--muted);">NO_ACTION</span>
+				<span style="font-size:10px;color:var(--muted);">Confidence:</span>
+				<span id="conf-val" style="font-size:12px;font-weight:700;color:var(--accent);">─</span>
+			</div>
+			<div class="conf-bar">
+				<div class="conf-fill" id="conf-bar" style="width:0%;background:var(--accent)"></div>
+			</div>
+			<div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.8;">
+				<div>
+					Execution:
+					<span id="execution-status" style="color:var(--accent);">─</span>
+				</div>
+
+				<div>
+					Confirmation:
+					<span id="execution-source" style="color:var(--text);">─</span>
+				</div>
+
+				<div>
+					Latency:
+					<span id="execution-latency" style="color:var(--text);">─</span>
+				</div>
+
+				<div>
+					Measured Delta:
+					<span id="execution-delta" style="color:var(--text);">─</span>
+				</div>
+			</div>
+			<div style="margin-top:10px;" class="rec-box rec-NO_ACTION" id="rec-message">Waiting for data...</div>
+			<div class="flag-row" id="anomaly-flags"></div>
+		</div>
+
+		<!-- Cost Projection -->
+		<div class="card">
+			<div class="card-title">Cost Projection (DERC HT)</div>
+			<div class="metric">
+				<span class="metric-label">Projected Monthly Bill</span>
+				<span><span class="metric-value" id="monthly-bill" style="color:var(--warn);">─</span></span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Demand Charge</span>
+				<span style="font-size:11px;" id="cost-demand">─</span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Excess Surcharge</span>
+				<span style="font-size:11px;" id="cost-excess">─</span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Energy Charge</span>
+				<span style="font-size:11px;" id="cost-energy">─</span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">DRRS + Pension Trust</span>
+				<span style="font-size:11px;" id="cost-surcharge">─</span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">PPAC</span>
+				<span style="font-size:11px;" id="cost-ppac">─</span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Electricity Duty</span>
+				<span style="font-size:11px;" id="cost-duty">─</span>
+			</div>
+			<div class="metric">
+				<span class="metric-label">Energy Rate</span>
+				<span style="font-size:11px;" id="energy-rate">─</span>
+			</div>
+		</div>
+
+	</div><!-- /grid-wide -->
+
+	<!-- History Table -->
+	<div style="padding:0 16px 16px;">
+		<div class="card">
+			<div class="card-title">Recent Tick History</div>
+			<div class="scroll-table">
+				<table>
+					<thead>
+						<tr>
+							<th>Time</th>
+							<th>kVA</th>
+							<th>kW</th>
+							<th>PF</th>
+							<th>Proj MDI</th>
+							<th>Risk</th>
+							<th>TOD</th>
+							<th>Bill ₹</th>
+							<th>Rec</th>
+							<th>Conf</th>
+						</tr>
+					</thead>
+					<tbody id="history-tbody"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<footer>Peakpilot v1.0 | DERC HT Industrial | Delhi NCR | Stage 0 MVP</footer>
+
+	<script>
+		const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+		const WS_URL = `${protocol}//${location.host}/ws/live`;
+		let ws = null;
+		const histBuf = [];
+		const MAX_HIST = 200;
+
+		// ── helpers ──────────────────────────────────────────────────────────
+		function fmt(v, d = 1) {
+			if (v == null || isNaN(v)) return '─';
+			return Number(v).toFixed(d);
+		}
+		function fmtRs(v) {
+			if (v == null || v === undefined || isNaN(Number(v))) return '─';
+			const num = Math.round(Number(v));
+			const formatted = num.toLocaleString('en-IN', { useGrouping: true, maximumFractionDigits: 0, minimumFractionDigits: 0 });
+			return '₹' + formatted;
+		}
+		function riskColor(r) {
+			return { SAFE: 'var(--safe)', WATCH: 'var(--watch)', WARNING: 'var(--warn)', CRITICAL: 'var(--danger)' }[r] || 'var(--text)';
+		}
+
+		function formatIsoTimeIst(isoString) {
+			if (!isoString) return '';
+			const date = new Date(isoString);
+			if (Number.isNaN(date.getTime())) return '';
+			return date.toLocaleTimeString('en-IN', {
+				hour12: false,
+				timeZone: 'Asia/Kolkata',
+			}) + ' IST';
+		}
+
+		// ── main update ───────────────────────────────────────────────────────
+		function update(d) {
+			if (!d || !d.tick) return;   // guard: skip empty/error payloads
+
+			document.getElementById('tick-counter').textContent = 'Ticks: ' + (d.tick_count || 0);
+			document.getElementById('last-update').textContent = formatIsoTimeIst(d.timestamp);
+
+			const t = d.tick || {};
+			const r = d.risk || {};
+			const c = d.cost || {};
+			const rec = d.recommendation || {};
+			const exec = d.execution || {};
+			const tar = d.tariff || {};
+			const an = d.anomaly || {};
+
+			// ── risk ──
+			const risk = r.risk_level || 'SAFE';
+			const badge = document.getElementById('risk-badge');
+			badge.textContent = risk;
+			badge.className = 'risk-badge risk-' + risk;
+
+			document.getElementById('proj-mdi').textContent = fmt(r.projected_mdi_kva);
+			document.getElementById('contract-kva').textContent = fmt(r.contract_demand_kva, 0);
+
+			const hw = r.headroom_kva || 0;
+			const hwEl = document.getElementById('headroom');
+			hwEl.textContent = fmt(hw);
+			hwEl.style.color = hw < 0 ? 'var(--danger)' : hw < 30 ? 'var(--warn)' : 'var(--safe)';
+
+			const ratio = (r.contract_demand_kva > 0) ? (r.projected_mdi_kva / r.contract_demand_kva) : 0;
+			document.getElementById('ratio-pct').textContent = fmt(ratio * 100, 1) + '%';
+			const bar = document.getElementById('mdi-bar');
+			bar.style.width = Math.min(ratio * 100, 100) + '%';
+			bar.style.background = ratio >= 1 ? 'var(--danger)' : ratio >= 0.92 ? 'var(--warn)' : ratio >= 0.85 ? 'var(--watch)' : 'var(--safe)';
+
+			// ── window ──
+			const elapsed = r.elapsed_minutes || 0;
+			document.getElementById('elapsed-min').textContent = fmt(elapsed, 1);
+			document.getElementById('remaining-min').textContent = fmt(r.remaining_minutes, 1);
+			document.getElementById('window-bar').style.width = Math.min(elapsed / 30 * 100, 100) + '%';
+			document.getElementById('acc-kvah').textContent = fmt(r.accumulated_kvah, 3);
+			document.getElementById('billing-day').textContent = r.billing_cycle_day != null ? r.billing_cycle_day : '─';
+			document.getElementById('monthly-md').textContent = r.months_md_so_far_kva != null ? fmt(r.months_md_so_far_kva, 1) + ' kVA' : '─';
+
+			// ── TOD badge ──
+			const todBadge = document.getElementById('tod-badge');
+			const todW = tar.tod_window || 'NO_TOD';
+			todBadge.textContent = todW;
+			todBadge.className = 'tod-badge tod-' + todW;
+
+			// ── live meter ──
+			document.getElementById('live-kva').textContent = fmt(t.kva);
+			document.getElementById('live-kw').textContent = fmt(t.kw);
+			document.getElementById('live-pf').textContent = fmt(t.pf, 3);
+			document.getElementById('live-freq').textContent = fmt(t.frequency, 2);
+			document.getElementById('voltages').textContent =
+				fmt(t.voltage_l1, 1) + ' / ' + fmt(t.voltage_l2, 1) + ' / ' + fmt(t.voltage_l3, 1) + ' V';
+
+			const dq = document.getElementById('data-quality');
+			dq.textContent = 'Source: ' + (t.source || '─') + ' | Quality: ' + (t.data_quality || '─');
+			dq.style.color = t.data_quality === 'GOOD' ? 'var(--safe)' : t.data_quality === 'STALE' ? 'var(--danger)' : 'var(--warn)';
+
+			// ── cost ──
+			document.getElementById('monthly-bill').textContent = fmtRs(c.projected_monthly_bill);
+			document.getElementById('cost-demand').textContent = fmtRs(c.demand_charge);
+
+			const exEl = document.getElementById('cost-excess');
+			exEl.textContent = fmtRs(c.excess_surcharge);
+			exEl.style.color = (c.excess_surcharge || 0) > 0 ? 'var(--danger)' : 'var(--muted)';
+
+			document.getElementById('cost-energy').textContent = fmtRs(c.energy_charge);
+			document.getElementById('cost-surcharge').textContent = fmtRs((c.drrs || 0) + (c.pension_trust || 0));
+			document.getElementById('cost-ppac').textContent = fmtRs(c.ppac);
+			document.getElementById('cost-duty').textContent = fmtRs(c.electricity_duty);
+			document.getElementById('energy-rate').textContent =
+				tar.effective_energy_rate != null ? '₹' + fmt(tar.effective_energy_rate, 4) + '/kVAh' : '─';
+
+			// ── recommendation ──
+			const recType = rec.type || 'NO_ACTION';
+			const recBadge = document.getElementById('rec-type-badge');
+			recBadge.textContent = recType;
+			recBadge.style.background = { SHED: '#450a0a', DELAY: '#451a03', PRE_RUN: '#0a2540', NO_ACTION: '#1e2530' }[recType] || '#1e2530';
+			recBadge.style.color = { SHED: 'var(--danger)', DELAY: 'var(--warn)', PRE_RUN: 'var(--accent)', NO_ACTION: 'var(--muted)' }[recType] || 'var(--muted)';
+
+			const conf = rec.confidence || 0;
+			document.getElementById('conf-val').textContent = Math.round(conf * 100) + '%';
+
+			const cfBar = document.getElementById('conf-bar');
+			cfBar.style.width = (conf * 100) + '%';
+			cfBar.style.background = conf >= 0.75 ? 'var(--safe)' : conf >= 0.55 ? 'var(--accent)' : conf >= 0.35 ? 'var(--warn)' : 'var(--danger)';
+
+			const recMsg = document.getElementById('rec-message');
+			recMsg.textContent = rec.message || (rec.suppressed ? '[Suppressed ─ low confidence]' : '─');
+			recMsg.className = 'rec-box rec-' + recType;
+
+			document.getElementById('execution-status').textContent = exec.status || '─';
+			document.getElementById('execution-source').textContent = exec.confirmation_source || '─';
+			document.getElementById('execution-latency').textContent =
+				exec.confirmation_latency_ms != null ? Math.round(exec.confirmation_latency_ms) + ' ms' : '─';
+			document.getElementById('execution-delta').textContent =
+				exec.measured_delta_kva != null ? fmt(exec.measured_delta_kva) + ' kVA' : '─';
+
+			// ── anomaly flags ──
+			const flagDiv = document.getElementById('anomaly-flags');
+			flagDiv.innerHTML = '';
+			const flags = [
+				{ label: 'INRUSH', active: an.inrush_detected },
+				{ label: 'SUPPRESSION', active: an.inrush_suppression_active },
+				{ label: 'LOAD CREEP', active: an.load_creep_detected },
+				{ label: 'STALE DATA', active: an.stale_data_detected },
+			];
+			flags.forEach(f => {
+				const el = document.createElement('span');
+				el.className = 'flag ' + (f.active ? 'active' : 'ok');
+				el.textContent = f.label;
+				flagDiv.appendChild(el);
+			});
+			if (Array.isArray(r.escalation_reasons)) {
+				r.escalation_reasons.forEach(e => {
+					const el = document.createElement('span');
+					el.className = 'flag active';
+					el.textContent = '↑ ' + (e.split(':')[0] || e);
+					flagDiv.appendChild(el);
+				});
+			}
+
+			// ── history buffer + table ──
+			histBuf.unshift(d);
+			if (histBuf.length > MAX_HIST) histBuf.pop();
+			renderHistory();
+		}
+
+		function renderHistory() {
+			const tbody = document.getElementById('history-tbody');
+			tbody.innerHTML = histBuf.slice(0, 60).map(d => {
+				const t = d.tick || {};
+				const r = d.risk || {};
+				const c = d.cost || {};
+				const rec = d.recommendation || {};
+				const tar = d.tariff || {};
+				const risk = r.risk_level || 'SAFE';
+				return `<tr>
+      <td>${formatIsoTimeIst(d.timestamp)}</td>
+      <td>${fmt(t.kva)}</td>
+      <td>${fmt(t.kw)}</td>
+      <td>${fmt(t.pf, 3)}</td>
+      <td style="color:${riskColor(risk)}">${fmt(r.projected_mdi_kva)}</td>
+      <td><span class="risk-badge risk-${risk}" style="font-size:10px;padding:1px 6px;">${risk}</span></td>
+      <td>${tar.tod_window || '─'}</td>
+      <td style="font-size:11px;">${c.projected_monthly_bill != null ? fmtRs(c.projected_monthly_bill) : '─'}</td>
+      <td style="color:${rec.type === 'SHED' ? 'var(--danger)' : rec.type === 'DELAY' ? 'var(--warn)' : 'var(--muted)'};">${rec.type || '─'}</td>
+      <td>${rec.confidence != null ? Math.round(rec.confidence * 100) + '%' : '─'}</td>
+    </tr>`;
+			}).join('');
+		}
+
+		// ── WebSocket ─────────────────────────────────────────────────────────
+		function connect() {
+			const statusEl = document.getElementById('conn-status');
+			try {
+				ws = new WebSocket(WS_URL);
+			} catch (e) {
+				statusEl.textContent = '● DISCONNECTED';
+				statusEl.className = 'disconnected';
+				setTimeout(connect, 5000);
+				return;
+			}
+
+			ws.onopen = () => {
+				statusEl.textContent = '● LIVE';
+				statusEl.className = 'connected';
+			};
+
+			ws.onmessage = (evt) => {
+				try {
+					const d = JSON.parse(evt.data);
+					if (d && d.tick) update(d);
+				} catch (e) { /* ignore malformed frame */ }
+			};
+
+			ws.onclose = () => {
+				statusEl.textContent = '● DISCONNECTED';
+				statusEl.className = 'disconnected';
+				setTimeout(connect, 3000);
+			};
+
+			ws.onerror = () => { ws.close(); };
+		}
+
+		connect();
+
+		// Fallback polling ─ only fires when WS is not connected
+		setInterval(() => {
+			if (ws && ws.readyState === WebSocket.OPEN) return;
+			fetch('/latest')
+				.then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+				.then(d => { if (d && d.tick) update(d); })
+				.catch(() => { /* server not ready yet */ });
+		}, 4000);
+	</script>
+</body>
+
+</html>

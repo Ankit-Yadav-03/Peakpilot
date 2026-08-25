@@ -1,0 +1,251 @@
+api.app imports:
+  - core.config
+  - runtime.pipeline
+
+cost.cost_simulator imports:
+  - core.config
+  - core.models
+
+decision.action_state_manager imports:
+
+decision.control_policy imports:
+  - optimization.constraint_engine
+
+decision.decision_engine imports:
+  - core.config
+  - core.models
+  - cost.cost_simulator
+  - decision.action_state_manager
+  - decision.control_policy
+  - decision.intelligent_planner
+  - decision.recovery_engine
+  - ingestion.payload_validator
+  - intelligence.confidence_scorer
+  - learning.event_logger
+  - optimization.conflict_resolver
+  - optimization.constraint_engine
+  - optimization.optimizer
+  - recommendation.recommendation_engine
+  - risk.anomaly_detector
+  - risk.risk_estimator
+  - state.state_detector
+  - tariff.tariff_engine
+
+decision.intelligent_planner imports:
+  - optimization.constraint_engine
+
+decision.recovery_engine imports:
+  - core.models
+  - decision.action_state_manager
+
+ingestion.meter_stream imports:
+  - core.config
+  - core.models
+
+ingestion.payload_validator imports:
+  - core.config
+  - core.models
+
+intelligence.calibration imports:
+  - core.config
+  - core.models
+
+intelligence.confidence_scorer imports:
+  - core.models
+
+learning.event_logger imports:
+  - core.config
+  - core.models
+
+optimization.conflict_resolver imports:
+  - core.models
+
+optimization.constraint_engine imports:
+  - core.config
+  - core.models
+  - cost.cost_simulator
+
+optimization.optimizer imports:
+  - core.config
+  - core.models
+
+outcome.outcome_engine imports:
+  - core.config
+
+outcome.outcome_worker imports:
+  - core.config
+  - intelligence.confidence_scorer
+
+recommendation.recommendation_engine imports:
+  - core.config
+  - core.models
+  - decision.action_state_manager
+
+risk.anomaly_detector imports:
+  - core.config
+  - core.models
+
+risk.risk_estimator imports:
+  - core.config
+  - core.models
+
+runtime.main imports:
+  - api.app
+  - core.config
+  - ingestion.meter_stream
+  - learning.event_logger
+  - outcome.outcome_engine
+  - outcome.outcome_worker
+  - runtime.pipeline
+
+runtime.pipeline imports:
+  - core.config
+  - core.models
+  - decision.decision_engine
+  - ingestion.meter_stream
+  - intelligence.calibration
+  - intelligence.confidence_scorer
+  - learning.event_logger
+
+simulate imports:
+  - core.config
+  - decision.decision_engine
+  - ingestion.meter_stream
+  - intelligence.confidence_scorer
+  - learning.event_logger
+
+state.state_detector imports:
+  - core.config
+  - core.models
+
+tariff.tariff_engine imports:
+  - core.config
+  - core.models
+
+tariff.tariff_loader imports:
+  - core.config
+
+=====================================
+INVERSE DEPENDENCIES (Imported By)
+=====================================
+
+api.app is imported by:
+  - runtime.main
+
+core.config is imported by:
+  - api.app
+  - cost.cost_simulator
+  - decision.decision_engine
+  - ingestion.meter_stream
+  - ingestion.payload_validator
+  - intelligence.calibration
+  - learning.event_logger
+  - optimization.constraint_engine
+  - optimization.optimizer
+  - outcome.outcome_engine
+  - outcome.outcome_worker
+  - recommendation.recommendation_engine
+  - risk.anomaly_detector
+  - risk.risk_estimator
+  - runtime.main
+  - runtime.pipeline
+  - simulate
+  - state.state_detector
+  - tariff.tariff_engine
+  - tariff.tariff_loader
+
+core.models is imported by:
+  - cost.cost_simulator
+  - decision.decision_engine
+  - decision.recovery_engine
+  - ingestion.meter_stream
+  - ingestion.payload_validator
+  - intelligence.calibration
+  - intelligence.confidence_scorer
+  - learning.event_logger
+  - optimization.conflict_resolver
+  - optimization.constraint_engine
+  - optimization.optimizer
+  - recommendation.recommendation_engine
+  - risk.anomaly_detector
+  - risk.risk_estimator
+  - runtime.pipeline
+  - state.state_detector
+  - tariff.tariff_engine
+
+cost.cost_simulator is imported by:
+  - decision.decision_engine
+  - optimization.constraint_engine
+
+decision.action_state_manager is imported by:
+  - decision.decision_engine
+  - decision.recovery_engine
+  - recommendation.recommendation_engine
+
+decision.control_policy is imported by:
+  - decision.decision_engine
+
+decision.intelligent_planner is imported by:
+  - decision.decision_engine
+
+decision.recovery_engine is imported by:
+  - decision.decision_engine
+
+ingestion.meter_stream is imported by:
+  - runtime.main
+  - runtime.pipeline
+  - simulate
+
+ingestion.payload_validator is imported by:
+  - decision.decision_engine
+
+intelligence.calibration is imported by:
+  - runtime.pipeline
+
+intelligence.confidence_scorer is imported by:
+  - decision.decision_engine
+  - outcome.outcome_worker
+  - runtime.pipeline
+  - simulate
+
+learning.event_logger is imported by:
+  - decision.decision_engine
+  - runtime.main
+  - runtime.pipeline
+  - simulate
+
+optimization.conflict_resolver is imported by:
+  - decision.decision_engine
+
+optimization.constraint_engine is imported by:
+  - decision.control_policy
+  - decision.decision_engine
+  - decision.intelligent_planner
+
+optimization.optimizer is imported by:
+  - decision.decision_engine
+
+outcome.outcome_engine is imported by:
+  - runtime.main
+
+outcome.outcome_worker is imported by:
+  - runtime.main
+
+recommendation.recommendation_engine is imported by:
+  - decision.decision_engine
+
+risk.anomaly_detector is imported by:
+  - decision.decision_engine
+
+risk.risk_estimator is imported by:
+  - decision.decision_engine
+
+runtime.pipeline is imported by:
+  - api.app
+  - runtime.main
+
+state.state_detector is imported by:
+  - decision.decision_engine
+
+tariff.tariff_engine is imported by:
+  - decision.decision_engine

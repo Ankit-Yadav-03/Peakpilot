@@ -1,0 +1,26 @@
+{
+    "demand_charge_per_kVA": 250.0,
+    "excess_surcharge_rate": 1.30,
+    "energy_charge_per_kVAh": 7.75,
+    "voltage_rebate_11kv": 0.03,
+    "voltage_rebate_33kv": 0.04,
+    "voltage_rebate_220kv": 0.05,
+    "tod_peak_multiplier": 1.20,
+    "tod_offpeak_multiplier": 0.80,
+    "drrs_rate": 0.08,
+    "pension_trust_rate": 0.05,
+    "ppac_brpl": 0.0725,
+    "ppac_bypl": 0.0811,
+    "ppac_tpddl": 0.1047,
+    "electricity_duty_per_kWh": 0.72,
+    "tod_applicable_months": [5, 6, 7, 8, 9],
+    "peak_hours_summer": [[14, 17], [22, 24], [0, 1]],
+    "offpeak_hours_summer": [[4, 10]],
+    "_notes": {
+        "PPAC": "Changes quarterly. Update on each quarter boundary.",
+        "pension_trust": "Confirmed 5% FY2022-23. May be 7% per stakeholder testimony. Verify against live bill before invoicing.",
+        "tod": "No TOD October-April. Mandatory for sanctioned load >= 10kW / 11kVA.",
+        "kvah_billing": "kVAh billing is lag-only. Leading PF not separately charged.",
+        "voltage_rebate": "Applies to energy charges only, not demand/fixed charges."
+    }
+}

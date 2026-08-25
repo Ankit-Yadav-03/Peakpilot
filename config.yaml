@@ -1,0 +1,24 @@
+system:
+  db_path: "Peakpilot.db"
+  polling_interval_seconds: 30
+  max_consecutive_failures: 5
+  safety_margin_kva: 15.0
+  decision_cooldown_minutes: 2
+  inrush_window_seconds: 8
+  load_creep_threshold_pct: 3.0
+  load_creep_consecutive_windows: 3
+  stale_data_threshold_seconds: 90
+  simulation_tick_interval_seconds: 15
+  simulation_duration_minutes: 60
+  mqtt_host: "localhost"
+  mqtt_port: 1883
+  mqtt_topic: "energy/equipment/#"
+  api_host: "0.0.0.0"
+  api_port: 8000
+  log_level: "INFO"
+  meter_rent_monthly: 500.0
+
+paths:
+  tariff_config: "data/tariffs.json"
+  facility_config: "data/loads.json"
+  db_schema: "db/schema.sql"
